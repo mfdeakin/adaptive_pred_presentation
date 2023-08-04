@@ -1,0 +1,20 @@
+\href{https://github.com/mfdeakin/adaptive_predicates/blob/1caf304d6c502e619bcabdf51ab8696d52cff232/src/ae_fp_eval_impl.hpp#L281}{github.com/mfdeakin/adaptive\_predicates/.../src/ae\_fp\_eval\_impl.hpp\#L281}
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+template <std::ranges::range span_l,
+          std::ranges::range span_r,
+          std::ranges::range span_m>
+void sparse_mult(span_l storage_left,
+                 span_r storage_right,
+                 span_m storage_mult) {
+  auto out_i = storage_mult.end() - 1;
+  for (auto r : storage_right | std::views::reverse) {
+    for (auto l : storage_left | std::views::reverse) {
+      auto [upper, lower] = exact_mult(r, l);
+      *out_i = upper;
+      --out_i;
+      *out_i = lower;
+      --out_i;
+    }
+  }
+}
+\end{lstlisting}

@@ -1,0 +1,20 @@
+\href{https://github.com/mfdeakin/adaptive_predicates/blob/1caf304d6c502e619bcabdf51ab8696d52cff232/src/ae_fp_eval_impl.hpp#L127}{mfdeakin/adaptive\_predicates/.../src/ae\_fp\_eval\_impl.hpp\#L127}
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+constexpr void exactfp_eval_impl(E_ &&e,
+                                span_t partial_results)
+ noexcept {
+  // ...
+  if constexpr (is_expr_v<E>) {
+    const auto store_left =
+      partial_results.template first</* ... */>();
+    exactfp_eval_impl<eval_type>(e.lhs(), store_left);
+    const auto store_right =
+      partial_results.template subspan</* ... */>();
+    exactfp_eval_impl<eval_type>(e.rhs(), store_right);
+    // ...
+  } else /* there is a runtime result */ {
+    partial[0] = eval_type{e};
+  }
+}
+
+\end{lstlisting}

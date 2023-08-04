@@ -1,0 +1,20 @@
+\href{https://github.com/mfdeakin/adaptive_predicates/blob/main/src/ae_fp_eval_impl.hpp#L107}{.../src/ae\_fp\_eval\_impl.hpp\#L107}
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+template <typename Op>
+std::pair<eval_type, eval_type> eval_with_max_abs_err(
+  const eval_type left, const eval_type left_abs_err,
+  const eval_type right, const eval_type right_abs_err) {
+  if constexpr (/* is + or - */) {
+    return {result, left_abs_err + right_abs_err +
+                        std::abs(result) * epsilon / 2};
+
+  } else if constexpr (/* is multiplies */) {
+    return {result, right * left_abs_err +
+                    left * right_abs_err +
+                    left_abs_err * right_abs_err +
+                    std::abs(result) * epsilon / 2};
+  } else {
+    return {result, NaN};
+  }
+}
+\end{lstlisting}

@@ -1,0 +1,17 @@
+\href{https://github.com/mfdeakin/adaptive_predicates/blob/main/src/ae_fp_eval_impl.hpp#L237}{mfdeakin/adaptive\_predicates/.../src/ae\_fp\_eval\_impl.hpp\#L237}
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+auto merge_sum_append(auto begin, auto end, auto v) {
+  using eval_type = decltype(v);
+  auto out = begin;
+  for (auto &e : std::span{begin, end}) {
+    const auto [result, error] = two_sum(v, e);
+    e = eval_type{0.0};
+    v = result;
+    if (error) {
+      *out = error;
+      ++out;
+    }
+  }
+  return std::pair{out, v};
+}
+\end{lstlisting}

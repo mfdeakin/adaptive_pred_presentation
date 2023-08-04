@@ -1,0 +1,20 @@
+\href{https://github.com/mfdeakin/adaptive_predicates/blob/main/src/ae_adaptive_predicate_eval.hpp#L92}{.../src/ae\_adaptive\_predicate\_eval.hpp\#L92}
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+template <typename sub_expr, typename branch>
+std::pair<eval_type, eval_type>
+adaptive_eval_impl::eval_impl(sub_expr &&expr) {
+  auto &[result, memory = std::get<branch>(cache).get();
+  if (result)
+    return {*result, std::abs(*result) * epsilon / 2.0};
+
+  auto [lr, le] =
+    eval_impl<expr::LHS, /* left */>(expr.lhs());
+  auto [rr, re] =
+    eval_impl<expr::RHS, /* right */>(expr.rhs());
+  const auto [result, max_abs_err] =
+    eval_with_max_abs_err<Op>(lr, le, rr, re);
+  if(max_abs_err > std::abs(result)) {
+    /* Exact Eval Code... */
+  } else return {result, max_abs_err};
+}
+\end{lstlisting}

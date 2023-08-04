@@ -1,0 +1,15 @@
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+template <std::floating_point eval_type, typename E>
+  requires expr_type<E> || arith_number<E>
+constexpr eval_type exactfp_eval(E &&e) noexcept {
+    auto partial_results = ...;
+    std::span<eval_type, num_partials_for_exact<E>()>
+      partial_span{partial_results};
+    _impl::exactfp_eval_impl<eval_type>(
+      std::forward<E>(e), partial_span);
+    return _impl::merge_sum(partial_span);
+  } else {
+    return static_cast<eval_type>(e);
+  }
+}
+\end{lstlisting}

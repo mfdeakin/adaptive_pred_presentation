@@ -1,0 +1,19 @@
+\href{https://github.com/mfdeakin/adaptive\_predicates/blob/main/src/ae_fp_eval_impl.hpp#L252}{mfdeakin/adaptive\_predicates/.../src/ae\_fp\_eval\_impl.hpp\#L252}
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+auto merge_sum_quadratic(auto &&storage) {
+  auto out = storage.begin();
+  for (eval_type &inp : storage | std::views::filter(
+    [](const eval_type v) {
+      return v != eval_type{0};
+    })) {
+    eval_type v = inp;
+    auto [new_out, result] =
+      merge_sum_append(storage.begin(), out, v);
+    /* *** */
+    *new_out = result;
+    out = new_out + 1;
+  }
+  return *(out - 1);
+  /* *** */
+}
+\end{lstlisting}

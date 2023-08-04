@@ -1,0 +1,21 @@
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+template <typename Op_, typename LHS_, typename RHS_>
+class arith_expr final {
+public:
+  using LHS = std::remove_cvref_t<LHS_>;
+  using RHS = std::remove_cvref_t<RHS_>;
+  using Op = std::remove_cvref_t<Op_>;
+
+  constexpr arith_expr(const LHS &lhs, const RHS &rhs)
+      : m_lhs(lhs), m_rhs(rhs) {}
+  constexpr arith_expr(LHS &&lhs, RHS &&rhs)
+      : m_lhs(std::move(lhs)), m_rhs(std::move(rhs)) {}
+
+  constexpr auto &lhs() const noexcept { return m_lhs; }
+  constexpr auto &rhs() const noexcept { return m_rhs; }
+  constexpr auto &operator()() { return *this; }
+private:
+  [[no_unique_address]] LHS m_lhs;
+  [[no_unique_address]] RHS m_rhs;
+};
+\end{lstlisting}

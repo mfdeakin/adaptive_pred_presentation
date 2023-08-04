@@ -1,0 +1,18 @@
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+TEST_CASE("expr_template_structure",
+	  "[expr_template]") {
+  auto e = (arith_expr{} + 4.5 - 7) * 5;
+  using E = decltype(e);
+  static_assert(std::is_same_v<std::multiplies<>,
+		               E::Op>);
+  static_assert(std::is_same_v<std::minus<>,
+		               E::LHS::Op>);
+  static_assert(std::is_same_v<std::plus<>,
+		               E::LHS::LHS::Op>);
+  REQUIRE(e.rhs() == 5);
+  REQUIRE(e.lhs().rhs() == 7);
+  REQUIRE(e.lhs().lhs().rhs() == 4.5);
+
+  REQUIRE(fp_eval<real>(e) == -12.5);
+}
+\end{lstlisting}

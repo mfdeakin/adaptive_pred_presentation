@@ -1,0 +1,15 @@
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+template <std::floating_point eval_type,
+          typename E_>
+  requires expr_type<E_> || arith_number<E_>
+constexpr eval_type fp_eval(E_ &&e) noexcept {
+  using E = std::remove_cvref_t<E_>;
+  if constexpr (is_expr_v<E>) {
+    using Op = typename E::Op;
+    return Op()(fp_eval<eval_type>(e.lhs()),
+                fp_eval<eval_type>(e.rhs()));
+  } else {
+    return static_cast<eval_type>(e);
+  }
+}
+\end{lstlisting}

@@ -1,0 +1,146 @@
+\documentclass{beamer}
+\usetheme{Boadilla}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{braket,mathtools,siunitx}
+\usepackage{hyperref}
+\usepackage{textcomp,url}
+\usepackage{graphicx}
+\usepackage{listings,enumerate}
+\usepackage{booktabs,tabularx,longtable,multicol}
+\usepackage{subcaption}
+\usepackage{float}
+
+\lstset{language=C++}
+
+\setbeamercovered{transparent}
+
+\input{preamble_common.tex}
+
+\title{Adaptive Predicates Code Exploration}
+\author{Michael Deakin}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Adaptive Polynomial Predicates}
+  \begin{itemize}
+  \item Detailed in Shewchuk's 1996 {\bf Adaptive Precision Floating-Point Arithmetic and Fast Robust Geometric Predicates}
+  \item Some algorithms require correct (or at least consistent) floating point results, exact computations are slow
+  \item Hand written only for specific computations, doesn't support vectorization, but very fast
+  \end{itemize}
+  My code is at \href{https://github.com/mfdeakin/adaptive_predicates}{github.com/mfdeakin/adaptive\_predicates}\\
+  Overview:
+  \begin{itemize}
+  \item Introductory Test
+  \item Expression Template Implementation
+  \item Expression Template Evaluation
+  \item Exact Evaluation Implementation
+  \item Performance
+  \item Adaptive Evaluation
+  \item Performance
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Adaptive Polynomial Predicates Test}
+  {\href{https://github.com/mfdeakin/adaptive_predicates/blob/main/tests/test_adaptive_expr.cpp#L25}{github.com/mfdeakin/adaptive\_predicates/.../test\_adaptive\_expr.cpp\#L25}}
+  \input{tests.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{arith\_expr implementation}
+  \input{arith_expr.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{arith\_expr implementation}
+  \input{build_expr.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{arith\_expr evaluation}
+  \input{fp_eval.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{arith\_expr ``exact'' evaluation}
+  Requires a representation of an exact quantity, use a finite series: % aka expansion sum
+  $$(a_0, a_1, \ldots, a_n) = a_0 + a_1 + \ldots + a_n$$
+  Then given exact representations $A$ and $B$ of lengths $n + 1$ and $m + 1$, scalar $s$, we can exactly compute addition, subtraction, and multiplication:
+  \begin{itemize}
+    \item $A + B = (a_0, a_1, \ldots, a_n, b_0, b_1, \ldots, b_m)$
+    \item $A - B = (a_0, a_1, \ldots, a_n, -b_0, -b_1, \ldots, -b_m)$
+    \item $A * s = (\text{two\_prod}(a_0, s), \text{two\_prod}(a_1, s), \ldots, \text{two\_prod}(a_n, s))$
+    \item $A * B = A * b_0 + A * b_1 + \ldots + A * b_m$
+  \end{itemize}
+  where $\text{two\_prod}(a, b) = (a * b, fma(a, b, -a * b)$
+
+  Requires a method of converting the result to a good representative of the floating point type, this project uses $\text{merge\_sum}$.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{arith\_expr ``exact'' evaluation}
+  \input{exact_eval.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{arith\_expr ``exact'' evaluation}
+  \input{exact_eval_impl_1.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{sparse\_mult implementation}
+  \input{sparse_mult.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{merge\_sum implementation}
+  \input{merge_sum_1.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{merge\_sum implementation}
+  \input{merge_sum_2.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Testing and Performance}
+  Compute the orientation of points represented with double precision:
+  \includegraphics[width=0.475\linewidth]{images/orienttest.png}
+  \hspace{1mm}
+  \includegraphics[width=0.475\linewidth]{images/exact_benchmark.png}\\
+  \includegraphics[width=20px]{images/scream.png} Exact evaluation takes $~63\times$ longer than floating point evaluation\\
+  Use adaptive evaluation to avoid this cost
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Adaptive filter}
+  Use a filter to detect when floats aren't enough.
+  \input{eval_with_err.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Adaptive evaluation}
+  \input{adaptive_eval.tex}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Adaptive performance}
+  \includegraphics[width=0.475\linewidth]{images/adaptive_benchmark_fp.png}
+  \hspace{1mm}
+  \includegraphics[width=0.475\linewidth]{images/adaptive_benchmark_exact.png}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Acknowledgements}
+  \begin{centering}
+    \hspace{5mm}\includegraphics[width=1.0\linewidth]{images/collage.png}
+  \end{centering}
+\end{frame}
+
+\end{document}
